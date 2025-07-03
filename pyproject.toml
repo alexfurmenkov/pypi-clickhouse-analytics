@@ -1,0 +1,22 @@
+[project]
+name = "pypi-clickhouse-analytics"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "alexfurmenkov",email = "alexeyfurmenkov@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "fastapi (>=0.115.14,<0.116.0)",
+    "uvicorn (>=0.35.0,<0.36.0)",
+    "clickhouse-connect (>=0.8.18,<0.9.0)"
+]
+
+[tool.poetry]
+packages = [{include = "pypi_clickhouse_analytics", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
