@@ -1,3 +1,3 @@
-from .pypi_analytics_repo import PyPiAnalyticsRepo
+from .pypi_analytics_repo import PyPiProjectAnalyticsRepo
 
-__all__ = (PyPiAnalyticsRepo, )
+__all__ = (PyPiProjectAnalyticsRepo,)
