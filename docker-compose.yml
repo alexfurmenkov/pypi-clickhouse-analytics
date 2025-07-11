@@ -14,5 +14,15 @@ services:
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: "pass"
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+
 volumes:
   clickhouse_data:
+  redis_data:
