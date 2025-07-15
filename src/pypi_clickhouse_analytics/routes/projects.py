@@ -11,8 +11,12 @@ from pypi_clickhouse_analytics.services.pypi_analytics_service import PyPiAnalyt
 router = APIRouter()
 
 @router.get("/{project_name}")
-async def get_project(project_name: str):
-    pass
+async def get_project(
+    project_name: str,
+    *,
+    analytics_service: Annotated[PyPiAnalyticsService, Depends(get_pypi_analytics_service)],
+):
+    return await analytics_service.get_project_meta(project_name)
 
 
 @router.get("/{project_name}/downloads")
