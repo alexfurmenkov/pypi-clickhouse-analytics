@@ -16,7 +16,7 @@ async def get_pypi_analytics_repo() -> PyPiProjectAnalyticsRepo:
         password=settings.CLICKHOUSE_PASS,
         database=settings.CLICKHOUSE_DB,
         port=settings.CLICKHOUSE_PORT,
-    )  # TODO maybe using async with
+    )
     return PyPiProjectAnalyticsRepo(client)
 
 

@@ -10,7 +10,7 @@ from pypi_clickhouse_analytics.enums import GroupByColumn
 class PyPiProjectAnalyticsRepo:
     def __init__(self, clickhouse_client: AsyncClient):
         self.__clickhouse_client = clickhouse_client
-        self.__table_name = "pypi"  # TODO mb in config
+        self.__table_name = "pypi"
 
     async def get_download_count(
         self,
@@ -19,22 +19,15 @@ class PyPiProjectAnalyticsRepo:
         from_dt: datetime | None = None,
         to_dt: datetime | None = None
     ) -> int:
-        # TODO move where stmt to function
-        where_expressions: list[str] = [f"PROJECT = '{project_name}'"]
-        if from_dt:
-            where_expressions.append(f"TIMESTAMP >= '{from_dt.isoformat()}'")
-        if to_dt:
-            where_expressions.append(f"TIMESTAMP <= '{to_dt.isoformat()}'")
-
-        where_stmt: str = " AND ".join(where_expressions)
+        where_statements, params = self.__build_where_statements(project_name=project_name, from_dt=from_dt, to_dt=to_dt)
+        where_stmt: str = " AND ".join(where_statements)
         query: str = f"""
             SELECT COUNT(PROJECT) 
             FROM {self.__table_name}
             WHERE {where_stmt}
         """
 
-        # TODO use params to avoid injections
-        result: QueryResult = await self.__clickhouse_client.query(query)
+        result: QueryResult = await self.__clickhouse_client.query(query, parameters=params)
         count = result.result_rows[0][0]
         return int(count)
 
@@ -46,13 +39,8 @@ class PyPiProjectAnalyticsRepo:
         from_dt: datetime | None = None,
         to_dt: datetime | None = None
     ) -> Generator[dict, None, None]:
-        where_expressions: list[str] = [f"PROJECT = '{project_name}'"]
-        if from_dt:
-            where_expressions.append(f"TIMESTAMP >= '{from_dt.isoformat()}'")
-        if to_dt:
-            where_expressions.append(f"TIMESTAMP <= '{to_dt.isoformat()}'")
-
-        where_stmt: str = " AND ".join(where_expressions)
+        where_statements, params = self.__build_where_statements(project_name=project_name, from_dt=from_dt, to_dt=to_dt)
+        where_stmt: str = " AND ".join(where_statements)
         group_by_column_upper: str = group_by_column.upper()
         query: str = f"""
             SELECT 
@@ -61,9 +49,9 @@ class PyPiProjectAnalyticsRepo:
             FROM {self.__table_name}
             WHERE {where_stmt}
             GROUP BY {group_by_column_upper}
-            ORDER BY DOWNLOAD_COUNT
+            ORDER BY DOWNLOAD_COUNT DESC
         """
-        result: QueryResult = await self.__clickhouse_client.query(query)
+        result: QueryResult = await self.__clickhouse_client.query(query, parameters=params)
         return result.named_results()
 
     async def list_most_downloaded_projects(
@@ -72,15 +60,12 @@ class PyPiProjectAnalyticsRepo:
         to_dt: datetime | None = None,
         limit: int | None = None
     ) -> Generator[dict, None, None]:
-        where_expressions: list[str] = []
-        if from_dt:
-            where_expressions.append(f"TIMESTAMP >= '{from_dt.isoformat()}'")
-        if to_dt:
-            where_expressions.append(f"TIMESTAMP <= '{to_dt.isoformat()}'")
-
-        where_stmt = f"WHERE {' AND '.join(where_expressions)}" if where_expressions else ""
+        where_statements, params = self.__build_where_statements(from_dt=from_dt, to_dt=to_dt)
+        where_stmt = f"WHERE {' AND '.join(where_statements)}" if where_statements else ""
         query = f"""
-            SELECT PROJECT, COUNT(PROJECT) AS DOWNLOAD_COUNT
+            SELECT 
+              PROJECT, 
+              COUNT(PROJECT) AS DOWNLOAD_COUNT
             FROM {self.__table_name}
             {where_stmt}
             GROUP BY PROJECT
@@ -88,5 +73,26 @@ class PyPiProjectAnalyticsRepo:
         """
         if limit is not None:
             query += f" LIMIT {limit}"
-        result: QueryResult = await self.__clickhouse_client.query(query)
+        result: QueryResult = await self.__clickhouse_client.query(query, parameters=params)
         return result.named_results()
+
+    def __build_where_statements(
+        self,
+        *,
+        project_name: str | None = None,
+        from_dt: datetime | None = None,
+        to_dt: datetime | None = None
+    ) -> tuple[list[str], dict[str, str]]:
+        where_stmts: list[str] = []
+        params: dict[str, str] = {}
+        if project_name:
+            where_stmts.append("PROJECT = %(project)s")
+            params["project"] = project_name
+        if from_dt:
+            where_stmts.append("TIMESTAMP >= %(from_dt)s")
+            params["from_dt"] = from_dt
+        if to_dt:
+            where_stmts.append("TIMESTAMP <= %(to_dt)s")
+            params["to_dt"] = to_dt
+
+        return where_stmts, params
