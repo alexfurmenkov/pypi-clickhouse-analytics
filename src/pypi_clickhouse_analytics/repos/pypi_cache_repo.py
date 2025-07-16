@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from pypi_clickhouse_analytics.app_settings import settings
 from pypi_clickhouse_analytics.entities.projects import ProjectMeta
-from pypi_clickhouse_analytics.clients.cache import CacheClient
+from pypi_clickhouse_analytics.clients import CacheClient
 
 
 class PypiCacheRepo:

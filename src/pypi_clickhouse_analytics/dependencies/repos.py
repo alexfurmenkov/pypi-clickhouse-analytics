@@ -5,9 +5,8 @@ from fastapi.params import Depends
 
 from pypi_clickhouse_analytics.app_settings import settings
 from pypi_clickhouse_analytics.dependencies.clients import get_cache_client
-from pypi_clickhouse_analytics.repos import PyPiProjectAnalyticsRepo
-from pypi_clickhouse_analytics.repos.pypi_cache_repo import PypiCacheRepo
-from pypi_clickhouse_analytics.clients.cache import CacheClient
+from pypi_clickhouse_analytics.repos import PyPiProjectAnalyticsRepo, PypiCacheRepo
+from pypi_clickhouse_analytics.clients import CacheClient
 
 
 async def get_pypi_analytics_repo() -> PyPiProjectAnalyticsRepo:

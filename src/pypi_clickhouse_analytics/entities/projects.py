@@ -2,7 +2,7 @@ from collections.abc import Iterable
 
 from pydantic import BaseModel
 
-from pypi_clickhouse_analytics.enums.group_by_enum import GroupByColumn
+from pypi_clickhouse_analytics.enums import GroupByColumn
 
 
 class ProjectMeta(BaseModel):

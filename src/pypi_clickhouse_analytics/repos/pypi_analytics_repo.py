@@ -4,7 +4,7 @@ from clickhouse_connect.driver import AsyncClient
 from clickhouse_connect.driver.query import QueryResult
 from datetime import datetime
 
-from pypi_clickhouse_analytics.enums.group_by_enum import GroupByColumn
+from pypi_clickhouse_analytics.enums import GroupByColumn
 
 
 class PyPiProjectAnalyticsRepo:

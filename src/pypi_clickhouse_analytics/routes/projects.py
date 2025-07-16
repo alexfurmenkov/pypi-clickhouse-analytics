@@ -7,8 +7,8 @@ from starlette import status
 
 from pypi_clickhouse_analytics.dependencies.services import get_pypi_analytics_service
 from pypi_clickhouse_analytics.entities.projects import ProjectMeta, ProjectDownloads, GroupedDownloads
-from pypi_clickhouse_analytics.enums.group_by_enum import GroupByColumn
-from pypi_clickhouse_analytics.services.pypi_analytics_service import PyPiAnalyticsService
+from pypi_clickhouse_analytics.enums import GroupByColumn
+from pypi_clickhouse_analytics.services import PyPiAnalyticsService
 
 router = APIRouter()
 

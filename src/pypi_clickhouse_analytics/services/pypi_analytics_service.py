@@ -1,12 +1,11 @@
 from datetime import datetime
 from typing import Any, Iterable
 
-from pypi_clickhouse_analytics.clients.pypi_api_client import PyPiAPIClient
+from pypi_clickhouse_analytics.clients import PyPiAPIClient
 from pypi_clickhouse_analytics.entities.projects import ProjectDownloads, GroupedDownloads, GroupedDownloadItem, \
     ProjectMeta
-from pypi_clickhouse_analytics.enums.group_by_enum import GroupByColumn
-from pypi_clickhouse_analytics.repos import PyPiProjectAnalyticsRepo
-from pypi_clickhouse_analytics.repos.pypi_cache_repo import PypiCacheRepo
+from pypi_clickhouse_analytics.enums import GroupByColumn
+from pypi_clickhouse_analytics.repos import PypiCacheRepo, PyPiProjectAnalyticsRepo
 
 
 class PyPiAnalyticsService:
