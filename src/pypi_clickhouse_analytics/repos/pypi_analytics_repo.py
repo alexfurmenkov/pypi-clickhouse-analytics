@@ -19,6 +19,7 @@ class PyPiProjectAnalyticsRepo:
         from_dt: datetime | None = None,
         to_dt: datetime | None = None
     ) -> int:
+        # TODO move where stmt to function
         where_expressions: list[str] = [f"PROJECT = '{project_name}'"]
         if from_dt:
             where_expressions.append(f"TIMESTAMP >= '{from_dt.isoformat()}'")
