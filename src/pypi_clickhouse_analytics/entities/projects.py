@@ -16,6 +16,7 @@ class ProjectMeta(BaseModel):
 
 
 class ProjectDownloads(BaseModel):
+    project: str
     downloads: int
 
 

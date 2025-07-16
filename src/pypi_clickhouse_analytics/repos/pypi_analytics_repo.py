@@ -65,3 +65,28 @@ class PyPiProjectAnalyticsRepo:
         """
         result: QueryResult = await self.__clickhouse_client.query(query)
         return result.named_results()
+
+    async def list_most_downloaded_projects(
+        self,
+        from_dt: datetime | None = None,
+        to_dt: datetime | None = None,
+        limit: int | None = None
+    ) -> Generator[dict, None, None]:
+        where_expressions: list[str] = []
+        if from_dt:
+            where_expressions.append(f"TIMESTAMP >= '{from_dt.isoformat()}'")
+        if to_dt:
+            where_expressions.append(f"TIMESTAMP <= '{to_dt.isoformat()}'")
+
+        where_stmt = f"WHERE {' AND '.join(where_expressions)}" if where_expressions else ""
+        query = f"""
+            SELECT PROJECT, COUNT(PROJECT) AS DOWNLOAD_COUNT
+            FROM {self.__table_name}
+            {where_stmt}
+            GROUP BY PROJECT
+            ORDER BY DOWNLOAD_COUNT DESC
+        """
+        if limit is not None:
+            query += f" LIMIT {limit}"
+        result: QueryResult = await self.__clickhouse_client.query(query)
+        return result.named_results()

@@ -42,3 +42,13 @@ async def group_project_downloads(
     return await analytics_service.group_project_downloads(
         project_name, group_by_column, from_dt=start_date, to_dt=end_date
     )
+
+
+@router.get("/downloads/top")
+async def list_most_downloaded_projects(
+    analytics_service: Annotated[PyPiAnalyticsService, Depends(get_pypi_analytics_service)],
+    start_date: Annotated[datetime | None, Query(alias="startDate")] = None,
+    end_date: Annotated[datetime | None, Query(alias="endDate")] = None,
+    limit: Annotated[int | None, Query(alias="limit")] = 50,
+):
+    return await analytics_service.list_most_downloaded_projects(start_date, end_date, limit)

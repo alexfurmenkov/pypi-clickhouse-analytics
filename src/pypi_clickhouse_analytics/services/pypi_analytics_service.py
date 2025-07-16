@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Iterable
 
 from pypi_clickhouse_analytics.clients.pypi_api_client import PyPiAPIClient
 from pypi_clickhouse_analytics.entities.projects import ProjectDownloads, GroupedDownloads, GroupedDownloadItem, \
@@ -41,7 +41,7 @@ class PyPiAnalyticsService:
         download_count: int = await self.__pypi_analytics_repo.get_download_count(
             project_name, from_dt=from_dt, to_dt=to_dt
         )
-        return ProjectDownloads(downloads=download_count)
+        return ProjectDownloads(project=project_name, downloads=download_count)
 
     async def group_project_downloads(
         self,
@@ -60,4 +60,16 @@ class PyPiAnalyticsService:
                 GroupedDownloadItem(value=item[group_by_column], downloads=item["DOWNLOAD_COUNT"])
                 for item in downloads
             )
+        )
+
+    async def list_most_downloaded_projects(
+        self,
+        from_dt: datetime | None = None,
+        to_dt: datetime | None = None,
+        limit: int | None = None
+    ) -> Iterable[ProjectDownloads]:
+        projects = await self.__pypi_analytics_repo.list_most_downloaded_projects(from_dt, to_dt, limit)
+        return (
+            ProjectDownloads(project=project["PROJECT"], downloads=project["DOWNLOAD_COUNT"])
+            for project in projects
         )
