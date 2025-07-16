@@ -3,6 +3,8 @@ from typing import Any
 from httpx import Response, Request, AsyncClient
 
 from pypi_clickhouse_analytics.app_settings import settings
+from pypi_clickhouse_analytics.exceptions.resource import NotFoundError
+from pypi_clickhouse_analytics.exceptions.service import DownstreamServiceUnavailable
 
 
 class PyPiAPIClient:
@@ -21,5 +23,8 @@ class PyPiAPIClient:
 
     async def __send(self, request: Request) -> Response:
         response: Response = await self._http_client.send(request)
-        # TODO log and raise if bad response
+        if response.status_code == 404:
+            raise NotFoundError("Resource not found")
+        if response.status_code >= 500:
+            raise DownstreamServiceUnavailable("PyPi API is unavailable")
         return response
