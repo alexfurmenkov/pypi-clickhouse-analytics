@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import Response
 
@@ -16,16 +16,12 @@ async def base_service_error_handler(request: Request, exc: BaseError) -> Respon
         HTTPException(
             status_code=exc.status_code,
             detail=exc.args[0],
-        )
+        ),
     )
 
 
 @app.exception_handler(Exception)
 async def unhandled_error_handler(request: Request, exc: Exception) -> Response:
     return await http_exception_handler(
-        request,
-        HTTPException(
-            status_code=500,
-            detail="Internal Server Error"
-        )
+        request, HTTPException(status_code=500, detail="Internal Server Error")
     )

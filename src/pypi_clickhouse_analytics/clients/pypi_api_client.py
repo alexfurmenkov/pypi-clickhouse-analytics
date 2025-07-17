@@ -1,6 +1,7 @@
 from typing import Any
 
-from httpx import Response, Request, AsyncClient
+from httpx import AsyncClient, Request, Response
+from starlette import status
 
 from pypi_clickhouse_analytics.app_settings import settings
 from pypi_clickhouse_analytics.exceptions.resource import NotFoundError
@@ -8,7 +9,9 @@ from pypi_clickhouse_analytics.exceptions.service import DownstreamServiceUnavai
 
 
 class PyPiAPIClient:
-    def __init__(self, http_client: AsyncClient, pypi_api_url: str = settings.PYPI_API_URL):
+    def __init__(
+        self, http_client: AsyncClient, pypi_api_url: str = settings.PYPI_API_URL
+    ) -> None:
         self._http_client = http_client
         self.__pypi_api_url = pypi_api_url
 
@@ -23,8 +26,8 @@ class PyPiAPIClient:
 
     async def __send(self, request: Request) -> Response:
         response: Response = await self._http_client.send(request)
-        if response.status_code == 404:
+        if response.status_code == status.HTTP_404_NOT_FOUND:
             raise NotFoundError("Resource not found")
-        if response.status_code >= 500:
+        if response.status_code >= status.HTTP_500_INTERNAL_SERVER_ERROR:
             raise DownstreamServiceUnavailable("PyPi API is unavailable")
         return response

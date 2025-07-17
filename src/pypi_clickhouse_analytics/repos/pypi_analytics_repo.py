@@ -1,14 +1,15 @@
-from typing import Generator
+# ruff: noqa: S608 (using parametrized queries to avoid injections)
+from collections.abc import Generator
+from datetime import datetime
 
 from clickhouse_connect.driver import AsyncClient
 from clickhouse_connect.driver.query import QueryResult
-from datetime import datetime
 
 from pypi_clickhouse_analytics.enums import GroupByColumn
 
 
 class PyPiProjectAnalyticsRepo:
-    def __init__(self, clickhouse_client: AsyncClient):
+    def __init__(self, clickhouse_client: AsyncClient) -> None:
         self.__clickhouse_client = clickhouse_client
         self.__table_name = "pypi"
 
@@ -17,9 +18,11 @@ class PyPiProjectAnalyticsRepo:
         project_name: str,
         *,
         from_dt: datetime | None = None,
-        to_dt: datetime | None = None
+        to_dt: datetime | None = None,
     ) -> int:
-        where_statements, params = self.__build_where_statements(project_name=project_name, from_dt=from_dt, to_dt=to_dt)
+        where_statements, params = self.__build_where_statements(
+            project_name=project_name, from_dt=from_dt, to_dt=to_dt
+        )
         where_stmt: str = " AND ".join(where_statements)
         query: str = f"""
             SELECT COUNT(PROJECT) 
@@ -27,7 +30,9 @@ class PyPiProjectAnalyticsRepo:
             WHERE {where_stmt}
         """
 
-        result: QueryResult = await self.__clickhouse_client.query(query, parameters=params)
+        result: QueryResult = await self.__clickhouse_client.query(
+            query, parameters=params
+        )
         count = result.result_rows[0][0]
         return int(count)
 
@@ -37,9 +42,11 @@ class PyPiProjectAnalyticsRepo:
         *,
         group_by_column: GroupByColumn,
         from_dt: datetime | None = None,
-        to_dt: datetime | None = None
+        to_dt: datetime | None = None,
     ) -> Generator[dict, None, None]:
-        where_statements, params = self.__build_where_statements(project_name=project_name, from_dt=from_dt, to_dt=to_dt)
+        where_statements, params = self.__build_where_statements(
+            project_name=project_name, from_dt=from_dt, to_dt=to_dt
+        )
         where_stmt: str = " AND ".join(where_statements)
         group_by_column_upper: str = group_by_column.upper()
         query: str = f"""
@@ -51,17 +58,23 @@ class PyPiProjectAnalyticsRepo:
             GROUP BY {group_by_column_upper}
             ORDER BY DOWNLOAD_COUNT DESC
         """
-        result: QueryResult = await self.__clickhouse_client.query(query, parameters=params)
+        result: QueryResult = await self.__clickhouse_client.query(
+            query, parameters=params
+        )
         return result.named_results()
 
     async def list_most_downloaded_projects(
         self,
         from_dt: datetime | None = None,
         to_dt: datetime | None = None,
-        limit: int | None = None
+        limit: int | None = None,
     ) -> Generator[dict, None, None]:
-        where_statements, params = self.__build_where_statements(from_dt=from_dt, to_dt=to_dt)
-        where_stmt = f"WHERE {' AND '.join(where_statements)}" if where_statements else ""
+        where_statements, params = self.__build_where_statements(
+            from_dt=from_dt, to_dt=to_dt
+        )
+        where_stmt = (
+            f"WHERE {' AND '.join(where_statements)}" if where_statements else ""
+        )
         query = f"""
             SELECT 
               PROJECT, 
@@ -73,7 +86,9 @@ class PyPiProjectAnalyticsRepo:
         """
         if limit is not None:
             query += f" LIMIT {limit}"
-        result: QueryResult = await self.__clickhouse_client.query(query, parameters=params)
+        result: QueryResult = await self.__clickhouse_client.query(
+            query, parameters=params
+        )
         return result.named_results()
 
     def __build_where_statements(
@@ -81,7 +96,7 @@ class PyPiProjectAnalyticsRepo:
         *,
         project_name: str | None = None,
         from_dt: datetime | None = None,
-        to_dt: datetime | None = None
+        to_dt: datetime | None = None,
     ) -> tuple[list[str], dict[str, str]]:
         where_stmts: list[str] = []
         params: dict[str, str] = {}

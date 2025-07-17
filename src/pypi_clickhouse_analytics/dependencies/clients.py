@@ -7,7 +7,12 @@ from redis.asyncio import Redis
 from redis.exceptions import ConnectionError
 
 from pypi_clickhouse_analytics.app_settings import settings
-from pypi_clickhouse_analytics.clients import CacheClient, RedisCache, LocalCache, PyPiAPIClient
+from pypi_clickhouse_analytics.clients import (
+    CacheClient,
+    LocalCache,
+    PyPiAPIClient,
+    RedisCache,
+)
 
 
 async def get_httpx_client() -> AsyncGenerator[AsyncClient, None]:
@@ -18,7 +23,7 @@ async def get_httpx_client() -> AsyncGenerator[AsyncClient, None]:
 
 
 async def get_pypi_api_client(
-    http_client: Annotated[AsyncClient, Depends(get_httpx_client)]
+    http_client: Annotated[AsyncClient, Depends(get_httpx_client)],
 ) -> PyPiAPIClient:
     return PyPiAPIClient(http_client)
 

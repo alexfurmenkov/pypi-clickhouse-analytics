@@ -14,12 +14,95 @@ dependencies = [
     "pydantic-settings (>=2.10.1,<3.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "redis (>=6.2.0,<7.0.0)",
-    "cachetools (>=6.1.0,<7.0.0)"
+    "cachetools (>=6.1.0,<7.0.0)",
+    "pre-commit (>=4.2.0,<5.0.0)"
 ]
 
 [tool.poetry]
 packages = [{include = "pypi_clickhouse_analytics", from = "src"}]
 
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.12.3"
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py312"
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [
+    # Core Python style rules
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+
+    # Imports
+    "I",  # isort
+
+    # Best practices
+    "B",  # flake8-bugbear (common bugs and design issues)
+    "C4", # flake8-comprehensions
+
+    # Type hinting and annotations
+    "ANN",  # flake8-annotations
+
+    # Code complexity
+    "C90",  # mccabe
+
+    # Code quality & anti-patterns
+    "PL",   # pylint rules (selected subset)
+    "SIM",  # flake8-simplify
+
+    # Performance
+    "PERF",  # Perflint
+
+    # Security
+    "S",     # flake8-bandit (security issues)
+
+    # Modern Python features
+    "UP",  # pyupgrade
+
+    # Readability
+    "RUF",  # Ruff-specific rules
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-local-folder = ["pypi_clickhouse_analytics"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

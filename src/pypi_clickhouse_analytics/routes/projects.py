@@ -1,16 +1,22 @@
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Annotated, Iterable
+from typing import Annotated
 
 from fastapi import APIRouter, Query
 from fastapi.params import Depends
 from starlette import status
 
 from pypi_clickhouse_analytics.dependencies.services import get_pypi_analytics_service
-from pypi_clickhouse_analytics.entities.projects import ProjectMeta, ProjectDownloads, GroupedDownloads
+from pypi_clickhouse_analytics.entities.projects import (
+    GroupedDownloads,
+    ProjectDownloads,
+    ProjectMeta,
+)
 from pypi_clickhouse_analytics.enums import GroupByColumn
 from pypi_clickhouse_analytics.services import PyPiAnalyticsService
 
 router = APIRouter()
+
 
 @router.get(
     "/{project_name}",
@@ -20,8 +26,10 @@ router = APIRouter()
 async def get_project(
     project_name: str,
     *,
-    analytics_service: Annotated[PyPiAnalyticsService, Depends(get_pypi_analytics_service)],
-):
+    analytics_service: Annotated[
+        PyPiAnalyticsService, Depends(get_pypi_analytics_service)
+    ],
+) -> ProjectMeta:
     return await analytics_service.get_project_meta(project_name)
 
 
@@ -35,9 +43,13 @@ async def get_project_downloads(
     *,
     start_date: Annotated[datetime | None, Query] = None,
     end_date: Annotated[datetime | None, Query] = None,
-    analytics_service: Annotated[PyPiAnalyticsService, Depends(get_pypi_analytics_service)],
-):
-    return await analytics_service.get_project_download_count(project_name, from_dt=start_date, to_dt=end_date)
+    analytics_service: Annotated[
+        PyPiAnalyticsService, Depends(get_pypi_analytics_service)
+    ],
+) -> ProjectDownloads:
+    return await analytics_service.get_project_download_count(
+        project_name, from_dt=start_date, to_dt=end_date
+    )
 
 
 @router.get(
@@ -51,8 +63,10 @@ async def group_project_downloads(
     *,
     start_date: Annotated[datetime | None, Query] = None,
     end_date: Annotated[datetime | None, Query] = None,
-    analytics_service: Annotated[PyPiAnalyticsService, Depends(get_pypi_analytics_service)],
-):
+    analytics_service: Annotated[
+        PyPiAnalyticsService, Depends(get_pypi_analytics_service)
+    ],
+) -> GroupedDownloads:
     return await analytics_service.group_project_downloads(
         project_name, group_by_column, from_dt=start_date, to_dt=end_date
     )
@@ -64,9 +78,13 @@ async def group_project_downloads(
     status_code=status.HTTP_200_OK,
 )
 async def list_most_downloaded_projects(
-    analytics_service: Annotated[PyPiAnalyticsService, Depends(get_pypi_analytics_service)],
+    analytics_service: Annotated[
+        PyPiAnalyticsService, Depends(get_pypi_analytics_service)
+    ],
     start_date: Annotated[datetime | None, Query] = None,
     end_date: Annotated[datetime | None, Query] = None,
     limit: Annotated[int | None, Query] = 50,
-):
-    return await analytics_service.list_most_downloaded_projects(start_date, end_date, limit)
+) -> Iterable[ProjectDownloads]:
+    return await analytics_service.list_most_downloaded_projects(
+        start_date, end_date, limit
+    )
