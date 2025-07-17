@@ -18,7 +18,7 @@ class CacheClient(ABC):
 
     @abstractmethod
     async def set(
-        self, key: str, value: Any, *, ttl: timedelta | float | None = None
+        self, key: str, value: Any, *, ttl: int | timedelta | None = None
     ) -> Any:
         """
         Gets an item from the cache.
@@ -44,7 +44,7 @@ class RedisCache(CacheClient):
         return json.loads(item)
 
     async def set(
-        self, key: str, value: Any, *, ttl: timedelta | float | None = None
+        self, key: str, value: Any, *, ttl: int | timedelta | None = None
     ) -> Any:
         serialized = self._serialize_value(value)
         await self.__redis_client.set(key, serialized, ex=ttl)
@@ -57,6 +57,6 @@ class LocalCache(CacheClient):
         return self.cache.get(key, default)
 
     async def set(
-        self, key: str, value: Any, *, ttl: timedelta | float | None = None
+        self, key: str, value: Any, *, ttl: int | timedelta | None = None
     ) -> Any:
         self.cache[key] = self._serialize_value(value)

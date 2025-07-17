@@ -97,9 +97,9 @@ class PyPiProjectAnalyticsRepo:
         project_name: str | None = None,
         from_dt: datetime | None = None,
         to_dt: datetime | None = None,
-    ) -> tuple[list[str], dict[str, str]]:
+    ) -> tuple[list[str], dict[str, str | datetime]]:
         where_stmts: list[str] = []
-        params: dict[str, str] = {}
+        params: dict[str, str | datetime] = {}
         if project_name:
             where_stmts.append("PROJECT = %(project)s")
             params["project"] = project_name

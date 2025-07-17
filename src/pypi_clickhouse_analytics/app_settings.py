@@ -2,6 +2,10 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    """
+    This class defines app settings that can be overwritten with env vars.
+    """
+
     CLICKHOUSE_HOST: str
     CLICKHOUSE_PORT: int
     CLICKHOUSE_USER: str
@@ -21,4 +25,4 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
-settings = Settings()
+settings = Settings()  # type: ignore

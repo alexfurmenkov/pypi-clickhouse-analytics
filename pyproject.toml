@@ -15,7 +15,7 @@ dependencies = [
     "httpx (>=0.28.1,<0.29.0)",
     "redis (>=6.2.0,<7.0.0)",
     "cachetools (>=6.1.0,<7.0.0)",
-    "pre-commit (>=4.2.0,<5.0.0)"
+    "pre-commit (>=4.2.0,<5.0.0)",
 ]
 
 [tool.poetry]
@@ -24,6 +24,8 @@ packages = [{include = "pypi_clickhouse_analytics", from = "src"}]
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.12.3"
+mypy = "^1.17.0"
+types-cachetools = "^6.1.0.20250717"
 
 [tool.ruff]
 line-length = 88

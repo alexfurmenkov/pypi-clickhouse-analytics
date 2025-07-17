@@ -15,6 +15,7 @@ class PypiCacheRepo:
         )
         if project_meta is not None:
             return ProjectMeta.model_validate(project_meta)
+        return None
 
     async def set_project_meta(
         self, project_name: str, project_meta: ProjectMeta
