@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    container_name: app
     build: .
     depends_on:
       - clickhouse
@@ -9,11 +10,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      CLICKHOUSE_HOST: localhost
-      CLICKHOUSE_PORT: 8123
+      CLICKHOUSE_HOST: clickhouse
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASS: pass
-      CLICKHOUSE_DB: default
+      REDIS_HOST: redis
     command: >
       bash -c "
         poetry run init_clickhouse &&

@@ -1,6 +1,8 @@
 from collections.abc import AsyncGenerator
 from typing import Annotated
 
+from clickhouse_connect import get_async_client
+from clickhouse_connect.driver import AsyncClient as AsyncClickHouseClient
 from fastapi.params import Depends
 from httpx import AsyncClient, Timeout
 from redis.asyncio import Redis
@@ -13,6 +15,16 @@ from pypi_clickhouse_analytics.clients import (
     PyPiAPIClient,
     RedisCache,
 )
+
+
+async def get_clickhouse_client() -> AsyncClickHouseClient:
+    return await get_async_client(
+        host=settings.CLICKHOUSE_HOST,
+        username=settings.CLICKHOUSE_USER,
+        password=settings.CLICKHOUSE_PASS,
+        database=settings.CLICKHOUSE_DB,
+        port=settings.CLICKHOUSE_PORT,
+    )
 
 
 async def get_httpx_client() -> AsyncGenerator[AsyncClient, None]:
