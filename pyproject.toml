@@ -21,6 +21,8 @@ dependencies = [
 [tool.poetry]
 packages = [{include = "pypi_clickhouse_analytics", from = "src"}]
 
+[tool.poetry.scripts]
+init_clickhouse = "pypi_clickhouse_analytics.scripts.init_clickhouse:main"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.12.3"

@@ -1,6 +1,25 @@
 version: '3.8'
 
 services:
+  app:
+    build: .
+    depends_on:
+      - clickhouse
+      - redis
+    ports:
+      - "8000:8000"
+    environment:
+      CLICKHOUSE_HOST: localhost
+      CLICKHOUSE_PORT: 8123
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASS: pass
+      CLICKHOUSE_DB: default
+    command: >
+      bash -c "
+        poetry run init_clickhouse &&
+        poetry run uvicorn pypi_clickhouse_analytics.main:app --host 0.0.0.0 --port 8000
+      "
+
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: clickhouse
@@ -12,7 +31,7 @@ services:
     environment:
       CLICKHOUSE_DB: default
       CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: "pass"
+      CLICKHOUSE_PASSWORD: pass
 
   redis:
     image: redis:alpine
