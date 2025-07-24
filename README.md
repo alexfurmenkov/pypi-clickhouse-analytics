@@ -13,6 +13,8 @@ On startup, it automatically initializes the database and loads PyPI dataset (1.
 - 🐳 Docker + Poetry powered development
 - 🔄 Automatic ClickHouse initialization and table creation
 
+If you're curious about how I implemented this, check out [my series of posts](https://medium.com/@alexeyfurmenkov/building-fastapi-clickhouse-analytics-service-part-1-intro-afede148ef89) on Medium.
+
 ## 📦 How to run the app?
 ```
 git clone https://github.com/alexfurmenkov/pypi-clickhouse-analytics.git
